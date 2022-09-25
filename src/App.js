@@ -1,37 +1,35 @@
 import './App.css';
-import React, { Component } from 'react';
-import Navbar from './components/layouts/Navbar';
-import Users from './components/users/Users';
-import axios from 'axios';
-import Search from './components/users/Search';
+import { useEffect, useState } from 'react'
 
-class App extends Component {
-  state = {
-    users: [],
-    loading: false
-  }
-  async componentDidMount() {
-    this.setState({
-      loading: true
-    });
-    const response = await axios.get('https://api.github.com/users')
-    this.setState({
-      loading: false,
-      users: response.data
-    })
-  }
 
-  render() {
-    return (
-      <div className='App'>
-        <Navbar title='Git Finder' icon='fab fa-github' />
-        <div className='container'>
-          <Search />
-          <Users userData={this.state.users} loading={this.state.loading} />
-        </div>
+function App() {
+  const [quote, setQuote] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchQuote = async () => {
+    const res = await fetch(`https://type.fit/api/quotes`);
+    const data = await res.json();
+    const randomNumber = Math.floor(Math.random() * data.length);
+    setQuote(data[randomNumber].text)
+    setIsLoading(false);
+  }
+  
+  useEffect(() => {
+    fetchQuote();
+  }, [])
+  
+  
+
+  return (
+    <div className="app">
+      <div className="quote-container">
+        {isLoading && <p>Loading ...</p>}
+        <p>{quote}</p>
+        <button onClick={fetchQuote}>New Quote</button>
+        <button>Change Background</button>
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 export default App;
